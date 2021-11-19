@@ -44,11 +44,10 @@ print(df)
 ##########################################################################################################
 # Option 1: without pandas
 ##########################
-i=0
 Q1 = []
+
 daysum = np.tile(0.0, 30)
 
-#
 for row in csvdata:
         daysum[int(row[2])] = daysum[int(row[2])] + float(row[4])
 
@@ -62,15 +61,16 @@ with open('out/task1.csv', 'w', newline='') as out_f:
 #######################
 # Option 2: with pandas
 #######################
+Q1P = []
+
 daysList = df['transactionDay'].drop_duplicates().tolist()
 daysList = map(int, daysList)
 
-Q1P = []
 for day in daysList:
         sumPerDay = df[df['transactionDay'] == day]['transactionAmount'].sum()
         Q1P.append([day, round(sumPerDay,2)])
 
-with open('out/task1_p.csv', 'w', newline='') as out_f:
+with open('out/ptask1.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q1P)
 
@@ -82,29 +82,33 @@ with open('out/task1_p.csv', 'w', newline='') as out_f:
 ##################################################################################################################
 # Option 1: without pandas
 ##########################
-
-transType = ['AA','BB','CC','DD','EE','FF','GG']
-users = []
 Q2 = []
+trans = []
+users = []
 
 users.append(csvdata[0][1])
 for row in csvdata:
         if row[1] not in users:
                 users.append(row[1])
 
-valOutput = [([0.0]*len(transType)) for i in range(len(users))]
-count = [([0]*len(transType)) for i in range(len(users))]
+trans.append(csvdata[0][3])
+for row in csvdata:
+        if row[3] not in trans:
+                trans.append(row[3])
+
+valOutput = [([0.0]*len(trans)) for i in range(len(users))]
+count = [([0]*len(trans)) for i in range(len(users))]
 
 for row in csvdata:
         idx_user = users.index(row[1])
-        idx_trType = transType.index(row[3])
+        idx_trType = trans.index(row[3])
         valOutput[idx_user][idx_trType] += float(row[4])
         count[idx_user][idx_trType] += 1
 
 for i in range(len(users)):
         a = []
         a.append(users[i])
-        for j in range(len(transType)):
+        for j in range(len(trans)):
                 if count[i][j] > 0:
                         valOutput[i][j] = valOutput[i][j] / count[i][j]
                 a.append(round(valOutput[i][j],2))
@@ -118,6 +122,7 @@ with open('out/task2.csv', 'w', newline='') as out_f:
 # Option 2: with pandas
 #######################
 Q2P = []
+
 catList = df['category'].drop_duplicates().tolist()
 accList = df['accountId'].drop_duplicates().tolist()
 
@@ -129,7 +134,7 @@ for account in accList:
                 a.append(round(avgNum,2))
         Q2P.append(a)
 
-with open('out/task2_p.csv', 'w', newline='') as out_f:
+with open('out/ptask2.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q2P)
 
@@ -143,35 +148,32 @@ with open('out/task2_p.csv', 'w', newline='') as out_f:
 # 3. The total transaction value of transactions types “AA”, “CC” and “FF” in the previous 5 days per
 #    account
 ############################################################################################################
+# Option 1: without pandas
+##########################
 
-days = []
-days.append(csvdata[0][2])
-for row in csvdata:
-        if row[2] not in days:
-                days.append(row[2])
+# I could do this with pointers and logic, but our eyes would start to bleed and I'd need more than a week.
 
-
-
+#######################
+# Option 2: with pandas
+#######################
 Q3 = []
-for day in days:
+
+daysList = df['transactionDay'].drop_duplicates().tolist()
+
+for day in daysList:
         intDay = int(day)
         users = df[df['transactionDay'] == intDay]['accountId'].drop_duplicates().tolist()
         for user in users:
                 a = []
-                toDay = intDay-1
-                if intDay <= 5:
-                        fromDay = 1
-                else:
-                        fromDay = intDay-5
-                outpt = df[(df['accountId'] == user) & (df['transactionDay'] >= fromDay) & (df['transactionDay'] <= toDay)]['transactionAmount']
-                outAA = df[(df['accountId'] == user) & (df['transactionDay'] >= fromDay) & (df['transactionDay'] <= toDay) & (df['category'] == 'AA')]['transactionAmount'].sum()
-                outCC = df[(df['accountId'] == user) & (df['transactionDay'] >= fromDay) & (df['transactionDay'] <= toDay) & (df['category'] == 'CC')]['transactionAmount'].sum()
-                outFF = df[(df['accountId'] == user) & (df['transactionDay'] >= fromDay) & (df['transactionDay'] <= toDay) & (df['category'] == 'FF')]['transactionAmount'].sum()
+                outpt = df[(df['accountId'] == user) & (df['transactionDay'] >= intDay-5) & (df['transactionDay'] <= intDay-1)]['transactionAmount']
+                outAA = df[(df['accountId'] == user) & (df['transactionDay'] >= intDay-5) & (df['transactionDay'] <= intDay-1) & (df['category'] == 'AA')]['transactionAmount'].sum()
+                outCC = df[(df['accountId'] == user) & (df['transactionDay'] >= intDay-5) & (df['transactionDay'] <= intDay-1) & (df['category'] == 'CC')]['transactionAmount'].sum()
+                outFF = df[(df['accountId'] == user) & (df['transactionDay'] >= intDay-5) & (df['transactionDay'] <= intDay-1) & (df['category'] == 'FF')]['transactionAmount'].sum()
                 max_val = outpt.max()
                 avg_val = outpt.mean()
                 a.extend([day,user,round(max_val,2),round(avg_val,2),round(outAA,2),round(outCC,2),round(outFF,2)])
                 Q3.append(a)
 
-with open('out/task3.csv', 'w', newline='') as out_f:
+with open('out/ptask3.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q3)
