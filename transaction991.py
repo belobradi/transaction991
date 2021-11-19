@@ -86,7 +86,7 @@ for day in daysList:
         Q1P.append([day, round(sumPerDay,2)])
 
 # print results into a file
-with open('out/ptask1.csv', 'w', newline='') as out_f:
+with open('out/pandas_task1.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q1P)
 
@@ -161,7 +161,7 @@ for account in accList:
         Q2P.append(a)
 
 # print results into a file
-with open('out/ptask2.csv', 'w', newline='') as out_f:
+with open('out/pandas_task2.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q2P)
 
@@ -212,6 +212,6 @@ for day in daysList:
                 Q3P.append(a)
 
 # print results into a file
-with open('out/ptask3.csv', 'w', newline='') as out_f:
+with open('out/pandas_task3.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
     w.writerows(Q3P)
