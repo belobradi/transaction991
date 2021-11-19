@@ -183,7 +183,7 @@ with open('out/ptask2.csv', 'w', newline='') as out_f:
 #######################
 # Option 2: with pandas
 #######################
-Q3 = []
+Q3P = []
 
 # get all unique days
 daysList = df['transactionDay'].drop_duplicates().tolist()
@@ -209,9 +209,9 @@ for day in daysList:
                 outFF = df[(df['accountId'] == user) & (df['transactionDay'] >= intDay-5) & (df['transactionDay'] <= intDay-1) & (df['category'] == 'FF')]['transactionAmount'].sum()
 
                 a.extend([day,user,round(max_val,2),round(avg_val,2),round(outAA,2),round(outCC,2),round(outFF,2)])
-                Q3.append(a)
+                Q3P.append(a)
 
 # print results into a file
 with open('out/ptask3.csv', 'w', newline='') as out_f:
     w = csv.writer(out_f, delimiter=',')
-    w.writerows(Q3)
+    w.writerows(Q3P)
